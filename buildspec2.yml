@@ -28,7 +28,7 @@ phases:
           - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}.tar.gz" > archive.name
           - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"
-  pre_build:
+  post_build:
       commands:
           - echo . release-config.sh
           - echo '[ -z $MOO_CORE_REPO ] && exit 1'
