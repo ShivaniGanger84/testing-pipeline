@@ -1,0 +1,65 @@
+version: 0.2
+
+phases:
+  install:
+      commands:
+          - echo . release-config.sh
+          - echo'[ -z $MOO_CORE_REPO ] && exit 1'
+          - ": ${MOO_DRIVERS_TAG:=master}"
+          - echo git clone -b "${MOO_DRIVERS_TAG}" --single-branch "git@bitbucket.org:moovita/drivers.git"
+          - ": ${MOO_CORE_TAG:=master}"
+          - echo git clone -b "${MOO_CORE_TAG}" --single-branch --recurse-submodules "git@bitbucket.org:moovita/${MOO_CORE_REPO}.git"
+          - ": ${MOO_CONFIG_TAG:=master}"
+          - echo git clone -b "${MOO_CONFIG_TAG}" --single-branch "git@bitbucket.org:moovita/config.git"
+          - ": ${MOO_MAP_TAG:=master}"
+          - echo git clone -b "${MOO_MAP_TAG}" --single-branch "git@bitbucket.org:moovita/map.git"          
+          - echo cd "${BITBUCKET_CLONE_DIR}/${MOO_CORE_REPO}"
+          - echo SHA="$(git rev-parse --short HEAD)"
+          - echo . setup.sh -y -c
+          - echo ./setup.sh -y -s
+          - echo cd "${BITBUCKET_CLONE_DIR}/drivers"
+          - echo ./compile.sh "${MOO_DRIVERS[@]}"
+          - echo cd "${BITBUCKET_CLONE_DIR}"
+          - echo mkdir -p "./$MOO_PACKAGE/logs" 
+          - echo mv ./config "./$MOO_PACKAGE"
+          - echo mv ./map "./$MOO_PACKAGE"
+          - echo mv "./$MOO_CORE_REPO/bin" "./$MOO_PACKAGE/mooav"
+          - echo mv ./drivers/bin "./$MOO_PACKAGE/drivers"
+          - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}.tar.gz" > archive.name
+          - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"
+  pre_build:
+      commands:
+          - echo . release-config.sh
+          - echo '[ -z $MOO_CORE_REPO ] && exit 1'
+          - ": ${MOO_DRIVERS_TAG:=master}"
+          - echo git clone -b "${MOO_DRIVERS_TAG}" --single-branch "git@bitbucket.org:moovita/drivers.git"
+          - ": ${MOO_CORE_TAG:=master}"
+          - echo git clone -b "${MOO_CORE_TAG}" --single-branch --recurse-submodules "git@bitbucket.org:moovita/${MOO_CORE_REPO}.git"
+          - ": ${MOO_CONFIG_TAG:=master}"
+          - echo git clone -b "${MOO_CONFIG_TAG}" --single-branch "git@bitbucket.org:moovita/config.git"
+          - ": ${MOO_MAP_TAG:=master}"
+          - echo git clone -b "${MOO_MAP_TAG}" --single-branch "git@bitbucket.org:moovita/map.git"
+          - echo git clone -b master --single-branch "git@bitbucket.org:moovita/license-manager.git"
+          - echo cd "${BITBUCKET_CLONE_DIR}/license-manager"
+          - echo ./setenv-dev.sh
+          - echo cd "${BITBUCKET_CLONE_DIR}/${MOO_CORE_REPO}"
+          - echo SHA="$(git rev-parse --short HEAD)"
+          - echo . setup.sh -y -p 
+          - echo ./setup.sh -y -s
+          - echo cd "${BITBUCKET_CLONE_DIR}/drivers"
+          - echo ./compile.sh "${MOO_DRIVERS[@]}"
+          - echo cd "${BITBUCKET_CLONE_DIR}"
+          - echo mkdir -p "./$MOO_PACKAGE/logs" 
+          - echo mv ./config "./$MOO_PACKAGE"
+          - echo mv ./map "./$MOO_PACKAGE"
+          - echo mv "./$MOO_CORE_REPO/bin" "./$MOO_PACKAGE/mooav"
+          - echo mv ./drivers/bin "./$MOO_PACKAGE/drivers"
+          - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+          - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}_LICENSED.tar.gz" > archive.name
+          - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"		  
+artifacts:
+  files:
+    - archive.name
+    #- "*.tar.gz"
+    - gdrive.link
