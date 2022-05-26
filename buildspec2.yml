@@ -4,7 +4,7 @@ phases:
   install:
       commands:
           - echo . release-config.sh
-          - echo'[ -z $MOO_CORE_REPO ] && exit 1'
+          - echo '[ -z $MOO_CORE_REPO ] && exit 1'
           - ": ${MOO_DRIVERS_TAG:=master}"
           - echo git clone -b "${MOO_DRIVERS_TAG}" --single-branch "git@bitbucket.org:moovita/drivers.git"
           - ": ${MOO_CORE_TAG:=master}"
@@ -28,7 +28,9 @@ phases:
           - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}.tar.gz" > archive.name
           - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"
-  post_build:
+          - echo rclone copy "$(cat archive.name)" remote:Downloads
+          - echo "$(rclone link remote:Downloads/$(cat archive.name) 2>/dev/null)" > gdrive.link
+  pre_build:
       commands:
           - echo . release-config.sh
           - echo '[ -z $MOO_CORE_REPO ] && exit 1'
@@ -57,7 +59,9 @@ phases:
           - echo mv ./drivers/bin "./$MOO_PACKAGE/drivers"
           - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}_LICENSED.tar.gz" > archive.name
-          - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"		  
+          - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"
+          - echo rclone copy "$(cat archive.name)" remote:Downloads
+          - echo "$(rclone link remote:Downloads/$(cat archive.name) 2>/dev/null)" > gdrive.link		  
 artifacts:
   files:
     - archive.name
