@@ -2,7 +2,6 @@ version: 0.2
 
 phases:
   install:
-    name:  &release-package
       commands:
           - echo . release-config.sh
           - echo'[ -z $MOO_CORE_REPO ] && exit 1'
@@ -29,10 +28,7 @@ phases:
           - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}.tar.gz" > archive.name
           - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"
-          - echo rclone copy "$(cat archive.name)" remote:Downloads
-          - echo "$(rclone link remote:Downloads/$(cat archive.name) 2>/dev/null)" > gdrive.link
   pre_build:
-     name: &release-package-licensed
       commands:
           - echo . release-config.sh
           - echo '[ -z $MOO_CORE_REPO ] && exit 1'
@@ -61,9 +57,7 @@ phases:
           - echo mv ./drivers/bin "./$MOO_PACKAGE/drivers"
           - echo BRANCH="$(git rev-parse --abbrev-ref HEAD)"
           - echo "${BITBUCKET_REPO_SLUG}_${BRANCH}-${MOO_CORE_REPO}_${MOO_CORE_TAG}_${SHA}_LICENSED.tar.gz" > archive.name
-          - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"
-          - echo rclone copy "$(cat archive.name)" remote:Downloads
-          - echo "$(rclone link remote:Downloads/$(cat archive.name) 2>/dev/null)" > gdrive.link		  
+          - echo tar -czvf "$(cat archive.name)" "./$MOO_PACKAGE"		  
 artifacts:
   files:
     - archive.name
