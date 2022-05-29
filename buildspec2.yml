@@ -13,4 +13,4 @@ phases:
 
   build:
     commands:
-         - git clone -b MVP-1.5.3 --single-branch git@bitbucket.org:moovita/drivers.git
+         - git clone git@github.com:ShivaniGanger84/time-tracker.git
