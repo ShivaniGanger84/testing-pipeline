@@ -13,4 +13,4 @@ phases:
 
   build:
     commands:
-         - git clone git@github.com:ShivaniGanger84/time-tracker.git
+         - git clone git@github.com:ShivaniGanger84
